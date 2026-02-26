@@ -1,0 +1,287 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500,600,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   LUX / CLEAN BANKING THEME (Light + Dark)
+   - crisp typography
+   - subtle borders
+   - premium depth
+   - space-separated HSL variables
+   ========================================================= */
+
+:root {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --background: 210 30% 98%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 220 20% 92%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 220 20% 92%;
+
+  --border: 220 20% 90%;
+  --input: 220 22% 86%;
+  --ring: 198 89% 48%;
+
+  --primary: 198 89% 48%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+
+  --muted: 210 35% 96%;
+  --muted-foreground: 215 16% 42%;
+
+  /* A banking-gold accent (sparingly) */
+  --accent: 40 92% 52%;
+  --accent-foreground: 20 30% 10%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+
+  --chart-1: 198 89% 48%;
+  --chart-2: 155 78% 40%;
+  --chart-3: 40 92% 52%;
+  --chart-4: 265 82% 62%;
+  --chart-5: 0 84% 60%;
+
+  --radius: 0.75rem;
+
+  /* Ambient shadows tuned for “paper on glass” */
+  --shadow-2xs: 0 1px 0 0 hsl(222 47% 11% / 0.02);
+  --shadow-xs: 0 1px 0 0 hsl(222 47% 11% / 0.03),
+    0 1px 2px -1px hsl(222 47% 11% / 0.06);
+  --shadow-sm: 0 1px 0 0 hsl(222 47% 11% / 0.04),
+    0 6px 14px -10px hsl(222 47% 11% / 0.18);
+  --shadow: 0 1px 0 0 hsl(222 47% 11% / 0.05),
+    0 14px 30px -20px hsl(222 47% 11% / 0.22);
+  --shadow-md: 0 1px 0 0 hsl(222 47% 11% / 0.06),
+    0 20px 45px -30px hsl(222 47% 11% / 0.24);
+  --shadow-lg: 0 1px 0 0 hsl(222 47% 11% / 0.06),
+    0 28px 60px -38px hsl(222 47% 11% / 0.28);
+  --shadow-xl: 0 1px 0 0 hsl(222 47% 11% / 0.07),
+    0 40px 90px -55px hsl(222 47% 11% / 0.32);
+  --shadow-2xl: 0 1px 0 0 hsl(222 47% 11% / 0.08),
+    0 60px 140px -80px hsl(222 47% 11% / 0.40);
+
+  /* Elevation overlays used by existing utils */
+  --button-outline: rgba(0, 0, 0, 0.1);
+  --badge-outline: rgba(0, 0, 0, 0.06);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0, 0, 0, 0.03);
+  --elevate-2: rgba(0, 0, 0, 0.08);
+
+  --sidebar: 210 30% 97%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-border: 220 18% 90%;
+  --sidebar-primary: 198 89% 48%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 210 40% 94%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-ring: 198 89% 48%;
+
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Computed borders for theme */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(
+    from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(
+    from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(
+    from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(
+    from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(
+    from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(
+    from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(
+    from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) /
+      alpha
+  );
+}
+
+.dark {
+  --background: 222 47% 9%;
+  --foreground: 210 40% 98%;
+
+  --card: 222 47% 12%;
+  --card-foreground: 210 40% 98%;
+  --card-border: 220 20% 20%;
+
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --popover-border: 220 20% 22%;
+
+  --border: 220 20% 20%;
+  --input: 220 18% 24%;
+  --ring: 198 89% 52%;
+
+  --primary: 198 89% 52%;
+  --primary-foreground: 222 47% 11%;
+
+  --secondary: 222 35% 16%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 222 35% 15%;
+  --muted-foreground: 215 20% 70%;
+
+  --accent: 40 92% 55%;
+  --accent-foreground: 20 30% 10%;
+
+  --destructive: 0 84% 62%;
+  --destructive-foreground: 210 40% 98%;
+
+  --button-outline: rgba(255, 255, 255, 0.12);
+  --badge-outline: rgba(255, 255, 255, 0.07);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255, 255, 255, 0.05);
+  --elevate-2: rgba(255, 255, 255, 0.1);
+
+  --sidebar: 222 47% 10%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-border: 220 20% 18%;
+  --sidebar-primary: 198 89% 52%;
+  --sidebar-primary-foreground: 222 47% 11%;
+  --sidebar-accent: 222 35% 14%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-ring: 198 89% 52%;
+
+  --shadow-2xs: 0 1px 0 0 hsl(0 0% 0% / 0.25);
+  --shadow-xs: 0 1px 0 0 hsl(0 0% 0% / 0.35),
+    0 1px 2px -1px hsl(0 0% 0% / 0.45);
+  --shadow-sm: 0 1px 0 0 hsl(0 0% 0% / 0.45),
+    0 10px 26px -16px hsl(0 0% 0% / 0.8);
+  --shadow: 0 1px 0 0 hsl(0 0% 0% / 0.5),
+    0 16px 40px -24px hsl(0 0% 0% / 0.85);
+  --shadow-md: 0 1px 0 0 hsl(0 0% 0% / 0.55),
+    0 22px 52px -32px hsl(0 0% 0% / 0.9);
+  --shadow-lg: 0 1px 0 0 hsl(0 0% 0% / 0.6),
+    0 30px 70px -40px hsl(0 0% 0% / 0.92);
+  --shadow-xl: 0 1px 0 0 hsl(0 0% 0% / 0.65),
+    0 42px 100px -55px hsl(0 0% 0% / 0.94);
+  --shadow-2xl: 0 1px 0 0 hsl(0 0% 0% / 0.7),
+    0 60px 150px -85px hsl(0 0% 0% / 0.96);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-serif);
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--card) / 0.72),
+      hsl(var(--card) / 0.62)
+    );
+    border: 1px solid hsl(var(--card-border) / 0.7);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+
+  .grain::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  }
+
+  .grain-dark::before {
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+  }
+
+  .page-enter {
+    animation: page-enter 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .stagger-1 {
+    animation-delay: 60ms;
+  }
+  .stagger-2 {
+    animation-delay: 120ms;
+  }
+  .stagger-3 {
+    animation-delay: 180ms;
+  }
+  .stagger-4 {
+    animation-delay: 240ms;
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+}
