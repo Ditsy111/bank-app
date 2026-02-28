@@ -53,14 +53,32 @@ export function BankProvider({ children }: { children: React.ReactNode }) {
   { id: "3", name: "Anita" },
 ]);
   
-const [accounts, setAccounts] = useState<Account[]>(getAccounts());
+const [accounts, setAccounts] = useState<Account[]>([]);
 
 
- const [transactions, setTransactions] = useState<Transaction[]>(getTransactions());
+ const [transactions, setTransactions] = useState<Transaction[]>([]);
 
- const [loans, setLoans] = useState<Loan[]>(getLoans());
+ const [loans, setLoans] = useState<Loan[]>([]);
 
- useEffect(() => {
+ const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  async function loadData() {
+    const accountsData = await getAccounts();
+    const transactionsData = await getTransactions();
+    const loansData = await getLoans();
+
+    setAccounts(accountsData);
+    setTransactions(transactionsData);
+    setLoans(loansData);
+
+    setLoading(false);
+  }
+
+  loadData();
+}, []);
+
+useEffect(() => {
   saveAccounts(accounts);
 }, [accounts]);
 
@@ -192,6 +210,10 @@ function makeLoanPayment(
       createdAt: now,
     }
   ]);
+}
+
+if (loading) {
+  return <div>Loading...</div>;
 }
   return (
     <BankContext.Provider

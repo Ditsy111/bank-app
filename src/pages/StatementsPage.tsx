@@ -98,7 +98,7 @@ export default function StatementsPage() {
                 {row.createdAt}
               </div>
               <div className="font-semibold">
-                {row.description}
+                {row.category.toUpperCase()}
               </div>
               <div>
                 {row.type.toUpperCase()} — $

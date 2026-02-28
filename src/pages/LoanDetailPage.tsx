@@ -3,7 +3,7 @@ import { useBank } from "../context/BankContext";
 
 export default function LoanDetailPage() {
   const { loanId } = useParams();
-  const { loans, transfers } = useBank();
+  const { loans, transactions } = useBank();
 
   const loan = loans.find(l => l.id === loanId);
 
@@ -11,9 +11,9 @@ export default function LoanDetailPage() {
     return <div className="p-6">Loan not found.</div>;
   }
 
-  const loanPayments = transfers.filter(
-    t => t.to === loanId && t.type === "loan-payment"
-  );
+  const loanPayments = transactions.filter(
+  t => t.category === "loan-payment" && t.accountId === loanId
+);
 
   return (
     <div className="p-6 bg-background min-h-screen">
