@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useBank } from "../context/BankContext";
 import { Link } from "react-router-dom";
 
-
 export default function LoansPage() {
 
 const { loans } = useBank();
@@ -17,7 +16,11 @@ const { loans } = useBank();
   const [selectedCustomer, setSelectedCustomer] = useState("all");
 
   // Filter loans
-  const filteredLoans = loans;
+  const filteredLoans =
+  selectedCustomer === "all"
+    ? loans
+    : loans.filter(l => l.customerId === selectedCustomer);
+
 
   // Total outstanding
   const totalOutstanding = filteredLoans.reduce(

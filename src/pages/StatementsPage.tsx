@@ -1,10 +1,27 @@
 import { useState, useEffect } from "react";
-import { useBank } from "../context/BankContext";
+import { useBank} from "../context/BankContext";
+import type { Transaction } from "../context/BankContext";
+import { fetchTransactions } from "../api/transactionsApi";
 
 export default function StatementsPage() {
-  const { accounts, transactions } = useBank();
+  const { accounts} = useBank();
 
   const [selectedAccount, setSelectedAccount] = useState("");
+
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+  async function loadTransactions() {
+    if (!selectedAccount) return;
+
+    const data = await fetchTransactions(selectedAccount);
+    setTransactions(data);
+  }
+
+  loadTransactions();
+}, [selectedAccount]);
+
+  
 
   // Auto-select first account safely
   useEffect(() => {
@@ -17,8 +34,8 @@ export default function StatementsPage() {
     .filter(t => t.accountId === selectedAccount)
     .sort(
       (a, b) =>
-        new Date(a.createdAt).getTime() -
-        new Date(b.createdAt).getTime()
+        new Date(a.createdAt).getTime()
+        -new Date(b.createdAt).getTime()
     );
 
   // Summary

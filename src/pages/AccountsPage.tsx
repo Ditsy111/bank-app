@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 
 export default function AccountsPage() {
 
-  const { customers, accounts } = useBank();
+  const { customers, accounts, createAccount, depositMoney, withdrawMoney} = useBank();
+  const [nickname, setNickname] = useState("");
+const [balance, setBalance] = useState(0);
+const [customerId, setCustomerId] = useState("1");
   
 
   const [selectedCustomer, setSelectedCustomer] = useState("all");
@@ -19,6 +22,27 @@ export default function AccountsPage() {
     0
   );
 
+  const sortedAccounts = [...filteredAccounts].sort(
+  (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+);
+
+  async function handleCreate() {
+  if (!nickname) {
+    alert("Enter valid data");
+    return;
+  }
+
+  await createAccount({
+    nickname,
+    balance,
+    customerId
+  });
+
+  // reset fields
+  setNickname("");
+  setBalance(0);
+}
+
   return (
     <div className="p-6 bg-background min-h-screen">
       {/* Header */}
@@ -30,7 +54,8 @@ export default function AccountsPage() {
           </p>
         </div>
 
-        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-xl font-semibold">
+        <button onClick={handleCreate}
+                  className="bg-primary text-white px-4 py-2 rounded-xl">
           + New account
         </button>
       </div>
@@ -56,6 +81,27 @@ export default function AccountsPage() {
             </select>
           </div>
 
+          <div className="mb-4 flex gap-2">
+  <input
+    placeholder="Nickname"
+    value={nickname}
+    onChange={(e) => setNickname(e.target.value)}
+    className="border px-2 py-1"
+  />
+
+  <input
+    type="number"
+    placeholder="Balance"
+    value={balance}
+    onChange={(e) => setBalance(Number(e.target.value))}
+    className="border px-2 py-1"
+  />
+
+  <button onClick={handleCreate} className="bg-green-500 text-white px-3">
+    Create
+  </button>
+</div>
+
           {/* Account Cards */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredAccounts.map((account) => (
@@ -68,6 +114,22 @@ export default function AccountsPage() {
                 <div className="mt-3 text-lg font-semibold">
                   ${account.balance.toFixed(2)}
                 </div>
+
+                <div className="mt-3 flex gap-2">
+      <button
+        onClick={() => depositMoney(account.id, 100)}
+        className="bg-green-500 text-white px-2 py-1 rounded"
+      >
+        + Deposit
+      </button>
+
+      <button
+        onClick={() => withdrawMoney(account.id, 50)}
+        className="bg-red-500 text-white px-2 py-1 rounded"
+      >
+        - Withdraw
+      </button>
+    </div>
 
                 <Link
   to={`/accounts/${account.id}`}

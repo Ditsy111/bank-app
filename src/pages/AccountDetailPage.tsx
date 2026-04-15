@@ -1,19 +1,31 @@
 import { useParams } from "react-router-dom";
 import { useBank } from "../context/BankContext";
+import { useEffect, useState } from "react";
+import { fetchTransactions } from "../api/transactionsApi";
 
 export default function AccountDetailPage() {
   const { accountId } = useParams();
-  const { accounts, transactions } = useBank();
+  const { accounts } = useBank();
+
+  const [transactions, setTransactions] = useState([]);
 
   const account = accounts.find(a => a.id === accountId);
+
+  // 🔥 FETCH transactions when accountId changes
+  useEffect(() => {
+    async function loadTransactions() {
+      if (!accountId) return;
+
+      const data = await fetchTransactions(accountId);
+      setTransactions(data);
+    }
+
+    loadTransactions();
+  }, [accountId]);
 
   if (!account) {
     return <div className="p-6">Account not found.</div>;
   }
-
-  const accountTransfers = transactions.filter(
-    t => t.accountId === accountId
-  );
 
   return (
     <div className="p-6 bg-background min-h-screen">
@@ -32,13 +44,13 @@ export default function AccountDetailPage() {
         Recent Activity
       </h2>
 
-      {accountTransfers.length === 0 ? (
+      {transactions.length === 0 ? (
         <div className="text-muted-foreground text-sm">
           No transactions yet.
         </div>
       ) : (
         <div className="space-y-3">
-          {accountTransfers.map(t => (
+          {transactions.map((t: any) => (
             <div
               key={t.id}
               className="border border-border rounded-lg p-3 bg-card"

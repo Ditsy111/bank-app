@@ -1,12 +1,18 @@
-import type { Loan } from "../context/BankContext";
+const BASE_URL = "http://localhost:8080/api";
 
-// Get loans
-export function getLoans(): Loan[] {
-  const stored = localStorage.getItem("loans");
-  return stored ? JSON.parse(stored) : [];
+export async function fetchLoans() {
+  const res = await fetch(`${BASE_URL}/loans`);
+  return res.json();
 }
 
-// Save loans
-export function saveLoans(loans: Loan[]) {
-  localStorage.setItem("loans", JSON.stringify(loans));
+export async function payLoan(data: any) {
+  const res = await fetch(`${BASE_URL}/loans/payment`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  return res.text();
 }

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useBank } from "../context/BankContext";
+import { useBank, type Transaction } from "../context/BankContext";
 
 export default function TransfersPage() {
 
-  const { accounts, transactions, createTransfer } = useBank();
+  const { accounts, createTransfer } = useBank();
+
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -29,21 +31,34 @@ export default function TransfersPage() {
   }
 
   // Submit transfer
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
 
-    createTransfer(
-      formData.from,
-      formData.to,
-      Number(formData.amount)
-    );
-
-    setFormData({
-      from: "",
-      to: "",
-      amount: "",
+  try {
+    const response = await fetch("http://localhost:8080/api/transfers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Idempotency-Key": crypto.randomUUID()
+      },
+      body: JSON.stringify({
+        from: formData.from,
+        to: formData.to,
+        amount: Number(formData.amount)
+      })
     });
+
+    const data = await response.text();
+
+    alert(data); // show success message
+
+    setFormData({ from: "", to: "", amount: "" });
+
+  } catch (error) {
+    console.error(error);
+    alert("Transfer failed");
   }
+}
 
   return (
     <div className="p-6 bg-background min-h-screen">

@@ -1,12 +1,6 @@
-import type { Transaction } from "../context/BankContext";
+const BASE_URL = "http://localhost:8080/api";
 
-// Get all transactions
-export function getTransactions(): Transaction[] {
-  const stored = localStorage.getItem("transactions");
-  return stored ? JSON.parse(stored) : [];
-}
-
-// Save transactions
-export function saveTransactions(transactions: Transaction[]) {
-  localStorage.setItem("transactions", JSON.stringify(transactions));
+export async function fetchTransactions(accountId: string) {
+  const res = await fetch(`${BASE_URL}/transactions/account/${accountId}`);
+  return res.json();
 }

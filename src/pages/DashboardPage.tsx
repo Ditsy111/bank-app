@@ -1,21 +1,37 @@
+import { useEffect, useState } from "react";
 import { useBank } from "../context/BankContext";
 
 export default function DashboardPage() {
-  const { accounts, transactions } = useBank();
+  const { accounts} = useBank();
 
-  const totalBalance = accounts.reduce(
-  (sum, acc) => sum + acc.balance,
-  0
-);
+  const [transactions, setTransactions] = useState([]);
+  
 
-const recentTransfersCount = transactions.filter((tx)=>tx.category === "transfer").length;
+useEffect(() => {
+  async function loadTransactions() {
+    // If you have API for all transactions:
+    const res = await fetch("http://localhost:8080/api/transactions");
+    const data = await res.json();
+    setTransactions(data);
+  }
 
-const netMovement = transactions.reduce((sum, t) => {
-  return t.type === "credit"
-    ? sum + t.amount
-    : sum - t.amount;
-}, 0);
+  loadTransactions();
+}, []);
 
+const totalBalance = accounts.reduce(
+    (sum, acc) => sum + acc.balance,
+    0
+  );
+
+  const recentTransfersCount = transactions.filter(
+    (tx: any) => tx.category === "transfer"
+  ).length;
+
+  const netMovement = transactions.reduce((sum: number, t: any) => {
+    return t.type === "credit"
+      ? sum + t.amount
+      : sum - t.amount;
+  }, 0);
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">

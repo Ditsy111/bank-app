@@ -1,9 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useBank } from "../context/BankContext";
+import { useState, useEffect } from "react";
+import type { Transaction } from "../context/BankContext";
 
 export default function LoanDetailPage() {
   const { loanId } = useParams();
-  const { loans, transactions } = useBank();
+  const { loans} = useBank();
+
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
 
   const loan = loans.find(l => l.id === loanId);
 
@@ -11,9 +16,20 @@ export default function LoanDetailPage() {
     return <div className="p-6">Loan not found.</div>;
   }
 
+  useEffect(() => {
+  async function loadTransactions() {
+    const res = await fetch("http://localhost:8080/api/transactions");
+    const data = await res.json();
+    setTransactions(data);
+  }
+
+  loadTransactions();
+}, []);
+
   const loanPayments = transactions.filter(
-  t => t.category === "loan-payment" && t.accountId === loanId
+  (t:any)=> t.category === "loan-payment" && t.loanId === loanId
 );
+
 
   return (
     <div className="p-6 bg-background min-h-screen">
