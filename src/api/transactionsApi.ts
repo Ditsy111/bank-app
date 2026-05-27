@@ -1,6 +1,11 @@
 const BASE_URL = "http://localhost:8080/api";
 
-export async function fetchTransactions(accountId: string) {
-  const res = await fetch(`${BASE_URL}/transactions/account/${accountId}`);
+export async function fetchAllTransactions() {
+  const res = await fetch(`${BASE_URL}/transactions`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch transactions");
+  }
+
   return res.json();
 }

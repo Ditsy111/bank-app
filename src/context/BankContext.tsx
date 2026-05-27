@@ -1,5 +1,5 @@
 import { createAccount as createAccountApi , fetchAccounts } from "../api/accountsApi";
-import { fetchLoans, payLoan } from "../api/loansApi";
+import { fetchLoans, payLoan, createLoan as createLoanApi} from "../api/loansApi";
 import { transferMoney } from "../api/transferApi";
 import { useEffect, useState, useContext, createContext } from "react";
 import { deposit, withdraw } from "../api/accountsApi";
@@ -14,6 +14,7 @@ export type Account = {
   nickname: string;
   balance: number;
   customerId: string;
+  createdAt: string;
 };
 
 export type CreateAccountRequest = {
@@ -62,6 +63,7 @@ type BankContextType = {
   makeLoanPayment: (loanId: string, fromAccount: string, amount: number) => void;
   depositMoney: (id: string, amount: number) => Promise<void>;
   withdrawMoney: (id: string, amount: number) => Promise<void>;
+  createLoan: (accountId: string, data: any) => Promise<void>;
 };
 
 
@@ -136,6 +138,16 @@ async function withdrawMoney(id: string, amount: number) {
   }
 }
 
+async function createLoanHandler(accountId: string, data: any) {
+  try {
+    await createLoanApi(accountId, data);
+
+    await loadData(); // refresh loans + accounts
+  } catch (error) {
+    console.error("Loan creation failed", error);
+  }
+}
+
 async function makeLoanPayment(
  loanId: string,
   fromAccountId: string,
@@ -152,7 +164,7 @@ if (loading) {
   return (
     <BankContext.Provider
       value={{ customers, accounts, loans, createTransfer, makeLoanPayment, createAccount: createAccountHandler,
-         depositMoney, withdrawMoney }}
+         depositMoney, withdrawMoney, createLoan: createLoanHandler }}
     >
       {children}
     </BankContext.Provider>

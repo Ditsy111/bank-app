@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBank, type Transaction } from "../context/BankContext";
+import { fetchAllTransactions } from "../api/transactionsApi";
 
 export default function TransfersPage() {
+
 
   const { accounts, createTransfer } = useBank();
 
@@ -13,6 +15,21 @@ export default function TransfersPage() {
     to: "",
     amount: "",
   });
+
+  async function loadTransactions() {
+    const data = await fetchAllTransactions();
+
+    // ✅ keep only transfers
+    const transferTransactions = data.filter(
+      (t: any) => t.category === "transfer"
+    );
+
+    setTransactions(transferTransactions);
+  }
+
+  useEffect(() => {
+  loadTransactions();
+}, []);
 
   // Show only transfer-related transactions
   const recentTransfers = transactions
@@ -51,6 +68,8 @@ export default function TransfersPage() {
     const data = await response.text();
 
     alert(data); // show success message
+
+    await loadTransactions(); // refresh transfer list
 
     setFormData({ from: "", to: "", amount: "" });
 

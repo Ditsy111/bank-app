@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useBank} from "../context/BankContext";
 import type { Transaction } from "../context/BankContext";
-import { fetchTransactions } from "../api/transactionsApi";
+import { fetchAllTransactions } from "../api/transactionsApi";
 
 export default function StatementsPage() {
   const { accounts} = useBank();
@@ -14,7 +14,7 @@ export default function StatementsPage() {
   async function loadTransactions() {
     if (!selectedAccount) return;
 
-    const data = await fetchTransactions(selectedAccount);
+    const data = await fetchAllTransactions();
     setTransactions(data);
   }
 

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useBank } from "../context/BankContext";
 import { useEffect, useState } from "react";
-import { fetchTransactions } from "../api/transactionsApi";
+import { fetchAllTransactions } from "../api/transactionsApi";
 
 export default function AccountDetailPage() {
   const { accountId } = useParams();
@@ -16,7 +16,7 @@ export default function AccountDetailPage() {
     async function loadTransactions() {
       if (!accountId) return;
 
-      const data = await fetchTransactions(accountId);
+      const data = await fetchAllTransactions();
       setTransactions(data);
     }
 

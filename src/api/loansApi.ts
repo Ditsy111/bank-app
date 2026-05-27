@@ -16,3 +16,19 @@ export async function payLoan(data: any) {
 
   return res.text();
 }
+
+export async function createLoan(accountId: string, data: any) {
+  const res = await fetch(`${BASE_URL}/loans/${accountId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create loan");
+  }
+
+  return res.json();
+}
