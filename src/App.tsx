@@ -18,6 +18,10 @@ function App() {
 
       {/* Main Content */}
       <div className="flex-1">
+
+
+
+        
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/accounts" element={<AccountsPage />} />
