@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "./apiUtils";
+
 // This file handles ALL account data operations
 const BASE_URL = "http://localhost:8080/api";
 
@@ -14,9 +16,7 @@ export async function fetchAccounts() {
 export async function createAccount(data: any) {
   const res = await fetch(`${BASE_URL}/accounts`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data)
   });
 
@@ -30,7 +30,7 @@ export async function createAccount(data: any) {
 export async function deposit(accountId: string, amount: number) {
   const res = await fetch(
     `http://localhost:8080/api/accounts/${accountId}/deposit?amount=${amount}`,
-    { method: "POST" }
+    { method: "POST", headers: getAuthHeaders() }
   );
 
   if (!res.ok) {
@@ -43,12 +43,12 @@ export async function deposit(accountId: string, amount: number) {
 export async function withdraw(accountId: string, amount: number) {
   const res = await fetch(
     `http://localhost:8080/api/accounts/${accountId}/withdraw?amount=${amount}`,
-    { method: "POST" }
+    { method: "POST", headers: getAuthHeaders() }
   );
 
   if (!res.ok) {
     throw new Error("Withdraw failed");
   }
 
-  return res.json();
+  return res.text();
 }

@@ -6,7 +6,7 @@ export async function loginApi(
 ) {
   const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
-    headers: {
+     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -28,7 +28,7 @@ export async function registerApi(
 ) {
   const res = await fetch(`${BASE_URL}/register`, {
     method: "POST",
-    headers: {
+     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({

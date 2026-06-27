@@ -9,28 +9,39 @@ import Sidebar from "./components/Sidebar";
 import AccountDetailPage from "./pages/AccountDetailPage";
 import LoanDetailPage from "./pages/LoanDetailPage";
 
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import RegisterPage from "./pages/RegisterPage";
+
+import { useLocation } from "react-router-dom";
+
 function App() {
+
+   const location = useLocation();
+
+   const isAuthPage =
+    location.pathname === "/login" ||
+    location.pathname === "/register";
+
   return(
     <div className="flex min-h-screen bg-background text-foreground">
+
+      {!isAuthPage && <Sidebar />}
       
-      {/* Sidebar */}
-      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1">
-
-
-
         
         <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/accounts" element={<AccountsPage />} />
-          <Route path="/accounts/:accountId" element={<AccountDetailPage/>} />
-          <Route path="/transfers" element={<TransfersPage />} />
-          <Route path="/loans" element={<LoansPage />} />
-          <Route path="/loans/:loanId" element={<LoanDetailPage />} />
-
-          <Route path="/statements" element={<StatementsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/accounts" element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} />
+          <Route path="/accounts/:accountId" element={<ProtectedRoute><AccountDetailPage /></ProtectedRoute>} />
+          <Route path="/transfers" element={<ProtectedRoute><TransfersPage /></ProtectedRoute>} />
+          <Route path="/loans" element={<ProtectedRoute><LoansPage /></ProtectedRoute>} />
+          <Route path="/loans/:loanId" element={<ProtectedRoute><LoanDetailPage /></ProtectedRoute>} />
+          <Route path="/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
         </Routes>
       </div>
 

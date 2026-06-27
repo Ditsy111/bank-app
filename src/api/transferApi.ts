@@ -1,9 +1,12 @@
+import { getAuthHeaders } from "./apiUtils";
+
 const BASE_URL = "http://localhost:8080/api";
 
 export async function transferMoney(from: string, to: string, amount: number) {
   const res = await fetch(`${BASE_URL}/transfers`, {
     method: "POST",
     headers: {
+      ...getAuthHeaders(),
       "Content-Type": "application/json",
       "Idempotency-Key": crypto.randomUUID()
     },

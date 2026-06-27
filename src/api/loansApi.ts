@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "./apiUtils";
+
 const BASE_URL = "http://localhost:8080/api";
 
 export async function fetchLoans() {
@@ -20,9 +22,7 @@ export async function payLoan(data: any) {
 export async function createLoan(accountId: string, data: any) {
   const res = await fetch(`${BASE_URL}/loans/${accountId}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(data)
   });
 
@@ -30,5 +30,5 @@ export async function createLoan(accountId: string, data: any) {
     throw new Error("Failed to create loan");
   }
 
-  return res.json();
+  return res.text();
 }

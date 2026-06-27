@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { loginApi } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
 
@@ -92,6 +92,18 @@ export default function LoginPage() {
           >
             Login
           </button>
+
+          <div className="text-center mt-4">
+            <span className="text-sm text-muted-foreground">
+              New here?{" "}
+            </span>
+
+            <Link
+              to="/register"
+              className="text-primary font-semibold hover:underline">
+                Create an account
+            </Link>
+          </div>
 
         </form>
       </div>
