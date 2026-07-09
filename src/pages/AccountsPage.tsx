@@ -4,25 +4,18 @@ import { Link } from "react-router-dom";
 
 export default function AccountsPage() {
 
-  const { customers, accounts, createAccount, depositMoney, withdrawMoney} = useBank();
+  const { accounts, createAccount, depositMoney, withdrawMoney} = useBank();
   const [nickname, setNickname] = useState("");
 const [balance, setBalance] = useState(0);
-const [customerId, setCustomerId] = useState("1");
-  
 
-  const [selectedCustomer, setSelectedCustomer] = useState("all");
+const [showCreateForm, setShowCreateForm] = useState(false);
 
-   const filteredAccounts =
-  selectedCustomer === "all"
-    ? accounts
-    : accounts.filter(a => a.customerId === selectedCustomer);
-
-  const totalBalance = filteredAccounts.reduce(
+  const totalBalance = accounts.reduce(
     (sum, acc) => sum + acc.balance,
     0
   );
 
-  const sortedAccounts = [...filteredAccounts].sort(
+  const sortedAccounts = [...accounts].sort(
   (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
 );
 
@@ -34,14 +27,15 @@ const [customerId, setCustomerId] = useState("1");
 
   await createAccount({
     nickname,
-    balance,
-    customerId
+    balance
   });
 
   // reset fields
   setNickname("");
   setBalance(0);
 }
+
+console.log(accounts);
 
   return (
     <div className="p-6 bg-background min-h-screen">
@@ -54,9 +48,11 @@ const [customerId, setCustomerId] = useState("1");
           </p>
         </div>
 
-        <button onClick={handleCreate}
-                  className="bg-primary text-white px-4 py-2 rounded-xl">
-          + New account
+        <button
+            onClick={() => setShowCreateForm(true)}
+            className="bg-primary text-white px-4 py-2 rounded-xl"
+        >
+          + New Account
         </button>
       </div>
 
@@ -81,30 +77,60 @@ const [customerId, setCustomerId] = useState("1");
             </select>
           </div>
 
-          <div className="mb-4 flex gap-2">
-  <input
-    placeholder="Nickname"
-    value={nickname}
-    onChange={(e) => setNickname(e.target.value)}
-    className="border px-2 py-1"
-  />
+          {showCreateForm && (
 
-  <input
-    type="number"
-    placeholder="Balance"
-    value={balance}
-    onChange={(e) => setBalance(Number(e.target.value))}
-    className="border px-2 py-1"
-  />
+<div className="mb-6 rounded-xl border border-border p-5 bg-card">
 
-  <button onClick={handleCreate} className="bg-green-500 text-white px-3">
-    Create
-  </button>
+<h3 className="text-lg font-semibold mb-4">
+Create New Account
+</h3>
+
+<input
+  placeholder="Account nickname"
+  value={nickname}
+  onChange={(e)=>setNickname(e.target.value)}
+  className="w-full border border-border rounded-lg px-3 py-2 mb-3"
+/>
+
+<input
+  type="number"
+  placeholder="Initial Deposit"
+  value={balance}
+  onChange={(e)=>setBalance(Number(e.target.value))}
+  className="w-full border border-border rounded-lg px-3 py-2 mb-4"
+/>
+
+<div className="flex gap-3">
+
+<button
+className="flex-1 bg-gray-500 text-white py-2 rounded-lg"
+onClick={()=>setShowCreateForm(false)}
+>
+Cancel
+</button>
+
+<button
+className="flex-1 bg-primary text-white py-2 rounded-lg"
+onClick={async ()=>{
+
+await handleCreate();
+
+setShowCreateForm(false);
+
+}}
+>
+Create Account
+</button>
+
 </div>
+
+</div>
+
+)}
 
           {/* Account Cards */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredAccounts.map((account) => (
+            {sortedAccounts.map((account) => (
               <div
                 key={account.id}
                 className="rounded-xl border border-border p-4 bg-background shadow-sm"

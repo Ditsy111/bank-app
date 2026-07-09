@@ -1,13 +1,14 @@
 export function getAuthHeaders() {
 
-  const token =
-    localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  return {
-    "Content-Type":
-      "application/json",
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+    };
 
-    Authorization:
-      `Bearer ${token}`
-  };
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    return headers;
 }

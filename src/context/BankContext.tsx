@@ -20,7 +20,6 @@ export type Account = {
 export type CreateAccountRequest = {
   nickname: string;
   balance: number;
-  customerId: string;
 };
 
 
@@ -55,7 +54,6 @@ export function useBank() {
 
 
 type BankContextType = {
-  customers: Customer[];
   accounts: Account[];
   loans: Loan[];
   createAccount: (data: CreateAccountRequest) => Promise<void>;
@@ -70,12 +68,6 @@ type BankContextType = {
 const BankContext = createContext<BankContextType | null>(null);
 
 export function BankProvider({ children }: { children: React.ReactNode }) {
-
-  const [customers] = useState<Customer[]>([
-  { id: "1", name: "Darshana" },
-  { id: "2", name: "Rahul" },
-  { id: "3", name: "Anita" },
-]);
   
 const [accounts, setAccounts] = useState<Account[]>([]);
 
@@ -86,15 +78,19 @@ const [accounts, setAccounts] = useState<Account[]>([]);
   async function loadData() {
   try {
     const accountsData = await fetchAccounts();
-    const loansData = await fetchLoans();
-
     setAccounts(accountsData);
+  } catch (error) {
+    console.error("Accounts failed", error);
+  }
+
+  try {
+    const loansData = await fetchLoans();
     setLoans(loansData);
   } catch (error) {
-    console.error("Error loading data", error);
-  } finally {
-    setLoading(false); // 🔥 ALWAYS RUNS
+    console.error("Loans failed", error);
   }
+
+  setLoading(false);
 }
  
   useEffect(()=>{
@@ -163,7 +159,7 @@ if (loading) {
 }
   return (
     <BankContext.Provider
-      value={{ customers, accounts, loans, createTransfer, makeLoanPayment, createAccount: createAccountHandler,
+      value={{ accounts, loans, createTransfer, makeLoanPayment, createAccount: createAccountHandler,
          depositMoney, withdrawMoney, createLoan: createLoanHandler }}
     >
       {children}

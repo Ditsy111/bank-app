@@ -39,7 +39,10 @@ export default function RegisterPage() {
 
   if (error.message.includes("400")) {
     setError("Password must be at least 6 characters");
-  } else {
+  }
+  else if (error.message.includes("409")) {
+    setError("An account with this email already exists.");
+   }else {
     setError("Registration failed");
   }
 
@@ -93,7 +96,7 @@ export default function RegisterPage() {
           />
 
           {error && (
-            <div className="text-red-500">
+            <div className="text-center mt-4 text-red-500">
               {error}
             </div>
           )}
@@ -107,7 +110,7 @@ export default function RegisterPage() {
 
           <Link
             to="/login"
-            className="text-primary"
+            className="text-center mt-4 text-primary"
           >
             Already have an account?
           </Link>

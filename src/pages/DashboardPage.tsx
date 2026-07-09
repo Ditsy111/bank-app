@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBank } from "../context/BankContext";
+import { fetchAllTransactions } from "../api/transactionsApi";
 
 export default function DashboardPage() {
   const { accounts} = useBank();
@@ -10,8 +11,7 @@ export default function DashboardPage() {
 useEffect(() => {
   async function loadTransactions() {
     // If you have API for all transactions:
-    const res = await fetch("http://localhost:8080/api/transactions");
-    const data = await res.json();
+    const data = await fetchAllTransactions();
     setTransactions(data);
   }
 

@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useBank } from "../context/BankContext";
 import { useState, useEffect } from "react";
 import type { Transaction } from "../context/BankContext";
+import { fetchAllTransactions } from "../api/transactionsApi";
 
 export default function LoanDetailPage() {
   const { loanId } = useParams();
@@ -18,8 +19,7 @@ export default function LoanDetailPage() {
 
   useEffect(() => {
   async function loadTransactions() {
-    const res = await fetch("http://localhost:8080/api/transactions");
-    const data = await res.json();
+    const data = await fetchAllTransactions();
     setTransactions(data);
   }
 

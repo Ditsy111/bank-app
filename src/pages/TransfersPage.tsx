@@ -48,35 +48,38 @@ export default function TransfersPage() {
   }
 
   // Submit transfer
-  async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
+  async function handleSubmit(
+    e: React.FormEvent
+) {
 
-  try {
-    const response = await fetch("http://localhost:8080/api/transfers", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Idempotency-Key": crypto.randomUUID()
-      },
-      body: JSON.stringify({
-        from: formData.from,
-        to: formData.to,
-        amount: Number(formData.amount)
-      })
-    });
+    e.preventDefault();
 
-    const data = await response.text();
+    try {
 
-    alert(data); // show success message
+        await createTransfer(
 
-    await loadTransactions(); // refresh transfer list
+            formData.from,
 
-    setFormData({ from: "", to: "", amount: "" });
+            formData.to,
 
-  } catch (error) {
-    console.error(error);
-    alert("Transfer failed");
-  }
+            Number(formData.amount)
+
+        );
+
+        await loadTransactions();
+
+        setFormData({
+            from: "",
+            to: "",
+            amount: ""
+        });
+
+    } catch {
+
+        alert("Transfer failed");
+
+    }
+
 }
 
   return (

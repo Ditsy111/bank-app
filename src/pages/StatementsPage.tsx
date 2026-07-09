@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useBank} from "../context/BankContext";
 import type { Transaction } from "../context/BankContext";
-import { fetchAllTransactions } from "../api/transactionsApi";
+import { fetchTransactionsByAccount } from "../api/transactionsApi";
 
 export default function StatementsPage() {
   const { accounts} = useBank();
@@ -14,7 +14,7 @@ export default function StatementsPage() {
   async function loadTransactions() {
     if (!selectedAccount) return;
 
-    const data = await fetchAllTransactions();
+    const data = await fetchTransactionsByAccount(selectedAccount);
     setTransactions(data);
   }
 
@@ -30,13 +30,11 @@ export default function StatementsPage() {
     }
   }, [accounts, selectedAccount]);
 
-  const accountTransactions = transactions
-    .filter(t => t.accountId === selectedAccount)
-    .sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime()
-        -new Date(b.createdAt).getTime()
-    );
+  const accountTransactions = [...transactions].sort(
+  (a, b) =>
+    new Date(a.createdAt).getTime() -
+    new Date(b.createdAt).getTime()
+);
 
   // Summary
   const credits = accountTransactions
