@@ -10,6 +10,13 @@ const [balance, setBalance] = useState(0);
 
 const [showCreateForm, setShowCreateForm] = useState(false);
 
+
+const [showTransactionForm, setShowTransactionForm] = useState(false);
+const [transactionType, setTransactionType] = useState<"deposit" | "withdraw">("deposit");
+const [selectedAccountId, setSelectedAccountId] = useState("");
+const [amount, setAmount] = useState(0);
+
+
   const totalBalance = accounts.reduce(
     (sum, acc) => sum + acc.balance,
     0
@@ -33,6 +40,7 @@ const [showCreateForm, setShowCreateForm] = useState(false);
   // reset fields
   setNickname("");
   setBalance(0);
+  setShowCreateForm(false);
 }
 
 console.log(accounts);
@@ -59,22 +67,8 @@ console.log(accounts);
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
         {/* Left Section */}
         <div className="rounded-xl bg-card border border-border p-5 shadow-sm">
-          {/* Filter */}
-          <div className="mb-4 flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Accounts</h2>
-
-            <select
-              value={selectedCustomer}
-              onChange={(e) => setSelectedCustomer(e.target.value)}
-              className="border border-border rounded-lg px-3 py-2 bg-background"
-            >
-              <option value="all">All customers</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold">My Accounts</h2>
           </div>
 
           {showCreateForm && (
@@ -111,13 +105,7 @@ Cancel
 
 <button
 className="flex-1 bg-primary text-white py-2 rounded-lg"
-onClick={async ()=>{
-
-await handleCreate();
-
-setShowCreateForm(false);
-
-}}
+onClick={handleCreate}
 >
 Create Account
 </button>
@@ -126,8 +114,72 @@ Create Account
 
 </div>
 
+
+
 )}
 
+  {showTransactionForm && (
+
+<div className="mb-6 rounded-xl border border-border p-5 bg-card">
+
+  <h3 className="text-lg font-semibold mb-4">
+
+    {transactionType === "deposit"
+      ? "Deposit Money"
+      : "Withdraw Money"}
+
+  </h3>
+
+  <input
+    type="number"
+    placeholder="Enter amount"
+    value={amount}
+    onChange={(e) => setAmount(Number(e.target.value))}
+    className="w-full border border-border rounded-lg px-3 py-2 mb-4"
+  />
+
+  <div className="flex gap-3">
+
+    <button
+      className="flex-1 bg-gray-500 text-white py-2 rounded-lg"
+      onClick={() => {
+        setShowTransactionForm(false);
+        setAmount(0);
+      }}
+    >
+      Cancel
+    </button>
+
+    <button
+  className="flex-1 bg-primary text-white py-2 rounded-lg"
+  onClick={async () => {
+
+    if (amount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+
+    if (transactionType === "deposit") {
+      await depositMoney(selectedAccountId, amount);
+    } else {
+      await withdrawMoney(selectedAccountId, amount);
+    }
+
+    setShowTransactionForm(false);
+    setAmount(0);
+
+  }}
+>
+  {transactionType === "deposit"
+    ? "Deposit"
+    : "Withdraw"}
+</button>
+
+  </div>
+
+</div>
+
+)}
           {/* Account Cards */}
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {sortedAccounts.map((account) => (
@@ -143,18 +195,27 @@ Create Account
 
                 <div className="mt-3 flex gap-2">
       <button
-        onClick={() => depositMoney(account.id, 100)}
-        className="bg-green-500 text-white px-2 py-1 rounded"
-      >
-        + Deposit
-      </button>
-
-      <button
-        onClick={() => withdrawMoney(account.id, 50)}
-        className="bg-red-500 text-white px-2 py-1 rounded"
-      >
-        - Withdraw
-      </button>
+  onClick={() => {
+    setSelectedAccountId(account.id);
+    setTransactionType("deposit");
+    setAmount(0);
+    setShowTransactionForm(true);
+  }}
+  className="bg-green-500 text-white px-2 py-1 rounded"
+>
+  + Deposit
+</button>
+<button
+  onClick={() => {
+    setSelectedAccountId(account.id);
+    setTransactionType("withdraw");
+    setAmount(0);
+    setShowTransactionForm(true);
+  }}
+  className="bg-red-500 text-white px-2 py-1 rounded"
+>
+  - Withdraw
+</button>
     </div>
 
                 <Link
