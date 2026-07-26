@@ -57,7 +57,10 @@ console.log(accounts);
         </div>
 
         <button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => {
+    setShowTransactionForm(false);
+    setShowCreateForm(true);
+}}
             className="bg-primary text-white px-4 py-2 rounded-xl"
         >
           + New Account
@@ -196,6 +199,7 @@ Create Account
                 <div className="mt-3 flex gap-2">
       <button
   onClick={() => {
+       setShowCreateForm(false);
     setSelectedAccountId(account.id);
     setTransactionType("deposit");
     setAmount(0);
@@ -207,6 +211,7 @@ Create Account
 </button>
 <button
   onClick={() => {
+       setShowCreateForm(false);
     setSelectedAccountId(account.id);
     setTransactionType("withdraw");
     setAmount(0);

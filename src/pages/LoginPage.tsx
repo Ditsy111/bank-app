@@ -2,12 +2,15 @@ import { useState } from "react";
 import { loginApi } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { useBank } from "../context/BankContext";
 
 export default function LoginPage() {
 
   const navigate = useNavigate();
 
   const { login } = useAuth();
+
+  const {refreshData} = useBank();
 
   const [email, setEmail] =
     useState("");
@@ -33,6 +36,8 @@ export default function LoginPage() {
         );
 
       login(token);
+
+      await refreshData();
 
       navigate("/");
 

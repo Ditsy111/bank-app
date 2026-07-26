@@ -3,11 +3,7 @@ import { fetchLoans, payLoan, createLoan as createLoanApi} from "../api/loansApi
 import { transferMoney } from "../api/transferApi";
 import { useEffect, useState, useContext, createContext } from "react";
 import { deposit, withdraw } from "../api/accountsApi";
-
-type Customer = {
-  id: string;
-  name: string;
-};
+import { useAuth } from "./AuthContext";
 
 export type Account = {
   id: string;
@@ -62,10 +58,12 @@ type BankContextType = {
   depositMoney: (id: string, amount: number) => Promise<void>;
   withdrawMoney: (id: string, amount: number) => Promise<void>;
   createLoan: (accountId: string, data: any) => Promise<void>;
+  refreshData: () => Promise<void>;
 };
 
 
 const BankContext = createContext<BankContextType | null>(null);
+
 
 export function BankProvider({ children }: { children: React.ReactNode }) {
   
@@ -76,33 +74,47 @@ const [accounts, setAccounts] = useState<Account[]>([]);
  const [loading, setLoading] = useState(true);
 
   async function loadData() {
-  try {
-    const accountsData = await fetchAccounts();
-    setAccounts(accountsData);
-  } catch (error) {
-    console.error("Accounts failed", error);
-  }
 
-  try {
-    const loansData = await fetchLoans();
-    setLoans(loansData);
-  } catch (error) {
-    console.error("Loans failed", error);
-  }
+    setLoading(true);
 
-  setLoading(false);
+    try {
+
+        const accountsData = await fetchAccounts();
+        setAccounts(accountsData);
+
+        const loansData = await fetchLoans();
+        setLoans(loansData);
+
+    } catch (error) {
+
+        console.error(error);
+
+    } finally {
+
+        setLoading(false);
+
+    }
+
 }
- 
-  useEffect(()=>{
-    loadData();
-},[]);
+
+const { isAuthenticated } = useAuth();
+
+useEffect(() => {
+    if (isAuthenticated) {
+        void loadData();
+    } else {
+        setAccounts([]);
+        setLoans([]);
+        setLoading(false);
+    }
+}, [isAuthenticated]);
 
 
   async function createTransfer(from: string, to: string, amount: number) {
   try {
     await transferMoney(from, to, amount);
     await loadData(); // refresh accounts
-  } catch (error) {
+  } catch {
     throw new Error("Transfer failed");
   }
 }
@@ -160,7 +172,7 @@ if (loading) {
   return (
     <BankContext.Provider
       value={{ accounts, loans, createTransfer, makeLoanPayment, createAccount: createAccountHandler,
-         depositMoney, withdrawMoney, createLoan: createLoanHandler }}
+         depositMoney, withdrawMoney, createLoan: createLoanHandler, refreshData: loadData }}
     >
       {children}
     </BankContext.Provider>
