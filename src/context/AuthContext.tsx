@@ -1,3 +1,4 @@
+import { fetchCurrentUser } from "../api/userApi";
 import {
   createContext,
   useContext,
@@ -6,12 +7,18 @@ import {
 
 type AuthContextType = {
   token: string | null;
+  user: CurrentUser | null;
 
   login: (token: string) => void;
 
   logout: () => void;
 
   isAuthenticated: boolean;
+};
+
+type CurrentUser = {
+  email: string;
+  role: string;
 };
 
 const AuthContext =
@@ -24,27 +31,42 @@ export function AuthProvider({children}: {children: React.ReactNode;})
     localStorage.getItem("token")
   );
 
-  function login(token: string) {
+  const [user, setUser] =
+  useState<CurrentUser | null>(null);
 
-    localStorage.setItem(
-      "token",
-      token
-    );
+  async function login(token: string) {
 
-    setToken(token);
+  localStorage.setItem("token", token);
+
+  setToken(token);
+
+  try {
+
+    const currentUser = await fetchCurrentUser();
+
+    setUser(currentUser);
+
+  } catch (error) {
+
+    console.error("Failed to load current user", error);
+
   }
+}
 
   function logout() {
 
     localStorage.removeItem("token");
 
     setToken(null);
+
+    setUser(null);
   }
 
   return (
     <AuthContext.Provider
       value={{
         token,
+        user,
         login,
         logout,
         isAuthenticated: !!token

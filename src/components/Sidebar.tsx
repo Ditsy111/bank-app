@@ -1,6 +1,16 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+  logout();
+  navigate("/login", { replace: true });
+}
+
   return (
     <aside className="w-72 min-h-screen bg-card border-r border-border p-4 flex flex-col">
 
@@ -25,6 +35,13 @@ export default function Sidebar() {
         <NavItem to="/loans" label="Loans" icon="🏦" />
         <NavItem to="/statements" label="Statements" icon="📄" />
       </nav>
+
+      <button
+        onClick={handleLogout}
+        className="mt-auto w-full rounded-lg border border-border px-4 py-2 text-left hover:bg-muted"
+      >
+        🚪 Logout
+      </button>
 
 
       {/* Quick Tip */}

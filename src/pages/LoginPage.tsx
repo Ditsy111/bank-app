@@ -35,7 +35,7 @@ export default function LoginPage() {
           password
         );
 
-      login(token);
+      await login(token);
 
       await refreshData();
 
