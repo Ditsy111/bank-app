@@ -24,7 +24,10 @@ export async function loginApi(
 
 export async function registerApi(
   email: string,
-  password: string
+  password: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string
 ) {
   const res = await fetch(`${BASE_URL}/register`, {
     method: "POST",
@@ -33,7 +36,10 @@ export async function registerApi(
     },
     body: JSON.stringify({
       email,
-      password
+      password,
+      firstName,
+      lastName,
+      phoneNumber
     })
   });
 

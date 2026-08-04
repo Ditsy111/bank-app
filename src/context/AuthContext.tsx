@@ -1,9 +1,5 @@
 import { fetchCurrentUser } from "../api/userApi";
-import {
-  createContext,
-  useContext,
-  useState
-} from "react";
+import { createContext, useContext, useState } from "react";
 
 type AuthContextType = {
   token: string | null;
@@ -13,53 +9,56 @@ type AuthContextType = {
 
   logout: () => void;
 
+  updateUser: (user: CurrentUser) => void;
+
   isAuthenticated: boolean;
 };
 
 type CurrentUser = {
+  firstName: string;
+
+  lastName: string;
+
   email: string;
+
+  phoneNumber: string;
+
   role: string;
 };
 
-const AuthContext =
-  createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({children}: {children: React.ReactNode;}) 
-{
-
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
+    localStorage.getItem("token"),
   );
 
-  const [user, setUser] =
-  useState<CurrentUser | null>(null);
+  const [user, setUser] = useState<CurrentUser | null>(null);
 
   async function login(token: string) {
+    localStorage.setItem("token", token);
 
-  localStorage.setItem("token", token);
+    setToken(token);
 
-  setToken(token);
+    try {
+      const currentUser = await fetchCurrentUser();
 
-  try {
-
-    const currentUser = await fetchCurrentUser();
-
-    setUser(currentUser);
-
-  } catch (error) {
-
-    console.error("Failed to load current user", error);
-
+      setUser(currentUser);
+    } catch (error) {
+      console.error("Failed to load current user", error);
+    }
   }
-}
 
   function logout() {
-
     localStorage.removeItem("token");
 
     setToken(null);
 
     setUser(null);
+  }
+
+  function updateUser(user: CurrentUser) {
+    setUser(user);
   }
 
   return (
@@ -69,7 +68,8 @@ export function AuthProvider({children}: {children: React.ReactNode;})
         user,
         login,
         logout,
-        isAuthenticated: !!token
+        updateUser,
+        isAuthenticated: !!token,
       }}
     >
       {children}
@@ -78,14 +78,10 @@ export function AuthProvider({children}: {children: React.ReactNode;})
 }
 
 export function useAuth() {
-
-  const context =
-    useContext(AuthContext);
+  const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
+    throw new Error("useAuth must be used inside AuthProvider");
   }
 
   return context;

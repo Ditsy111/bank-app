@@ -34,6 +34,7 @@ export default function Sidebar() {
         <NavItem to="/transfers" label="Transfers" icon="🔁" />
         <NavItem to="/loans" label="Loans" icon="🏦" />
         <NavItem to="/statements" label="Statements" icon="📄" />
+        <NavItem to="/profile" label="Profile" icon="👤" />
       </nav>
 
       <button

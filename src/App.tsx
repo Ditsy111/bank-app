@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterPage from "./pages/RegisterPage";
 
 import { useLocation } from "react-router-dom";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/loans" element={<ProtectedRoute><LoansPage /></ProtectedRoute>} />
           <Route path="/loans/:loanId" element={<ProtectedRoute><LoanDetailPage /></ProtectedRoute>} />
           <Route path="/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </div>
 

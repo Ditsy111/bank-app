@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useBank } from "../context/BankContext";
 import { fetchAllTransactions } from "../api/transactionsApi";
+import { useAuth } from "../context/AuthContext";
 
 export default function DashboardPage() {
   const { accounts} = useBank();
+
+  const { user } = useAuth();
 
   const [transactions, setTransactions] = useState([]);
   
@@ -24,17 +27,17 @@ const totalBalance = accounts.reduce(
   );
 
   const recentTransfersCount = transactions.filter(
-    (tx: any) => tx.category === "transfer"
+    (tx: { category: string }) => tx.category === "transfer"
   ).length;
 
-  const netMovement = transactions.reduce((sum: number, t: any) => {
+  const netMovement = transactions.reduce((sum: number, t: { type: string; amount: number }) => {
     return t.type === "credit"
       ? sum + t.amount
       : sum - t.amount;
   }, 0);
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
+  <div className="min-h-screen bg-background text-foreground p-6">
 
       {/* Header */}
       <div className="mb-6">
@@ -43,6 +46,24 @@ const totalBalance = accounts.reduce(
           A clean operational overview — balances and recent activity.
         </p>
       </div>
+
+      <div className="mb-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+    <h1 className="text-3xl font-bold">
+        👋 Welcome back,
+    </h1>
+
+    <h2 className="mt-2 text-2xl font-semibold">
+        {user?.firstName} {user?.lastName}
+    </h2>
+
+    <p className="mt-2 text-muted-foreground">
+        {user?.email}
+    </p>
+
+    <p className="text-muted-foreground">
+        Role: {user?.role}
+    </p>
+  </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">

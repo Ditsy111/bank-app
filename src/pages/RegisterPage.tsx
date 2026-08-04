@@ -10,6 +10,9 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] =
     useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const [error, setError] = useState("");
 
@@ -30,7 +33,10 @@ export default function RegisterPage() {
 
       await registerApi(
         email,
-        password
+        password,
+        firstName,
+        lastName,
+        phoneNumber
       );
 
       navigate("/login");
@@ -62,6 +68,30 @@ export default function RegisterPage() {
           onSubmit={handleRegister}
           className="space-y-4"
         >
+
+        <input
+    type="text"
+    placeholder="First Name"
+    value={firstName}
+    onChange={(e) => setFirstName(e.target.value)}
+    className="w-full border px-3 py-2 rounded"
+/>
+
+<input
+    type="text"
+    placeholder="Last Name"
+    value={lastName}
+    onChange={(e) => setLastName(e.target.value)}
+    className="w-full border px-3 py-2 rounded"
+/>
+
+<input
+    type="tel"
+    placeholder="Phone Number"
+    value={phoneNumber}
+    onChange={(e) => setPhoneNumber(e.target.value)}
+    className="w-full border px-3 py-2 rounded"
+/>
 
           <input
             type="email"
