@@ -16,18 +16,23 @@ import RegisterPage from "./pages/RegisterPage";
 import { useLocation } from "react-router-dom";
 import ProfilePage from "./pages/ProfilePage";
 
+import SessionTimeoutModal from "./components/SessionTimeoutModal";
+
+import { useAuth } from "./context/AuthContext";
 function App() {
+
+  const { isAuthenticated } = useAuth();
 
    const location = useLocation();
 
-   const isAuthPage =
+  const isAuthPage =
     location.pathname === "/login" ||
     location.pathname === "/register";
 
   return(
     <div className="flex min-h-screen bg-background text-foreground">
 
-      {!isAuthPage && <Sidebar />}
+      {isAuthenticated && !isAuthPage && <Sidebar />}
       
 
       {/* Main Content */}
@@ -46,6 +51,8 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </div>
+
+      <SessionTimeoutModal />
 
     </div>
   );
