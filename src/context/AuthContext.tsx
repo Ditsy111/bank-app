@@ -18,6 +18,8 @@ type AuthContextType = {
 
   hideSessionWarning: () => void;
 
+  inactivityWarning: boolean;
+
   isAuthenticated: boolean;
 };
 
@@ -54,6 +56,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [countdown, setCountdown] = useState(60);
 
+  const [inactivityWarning, setInactivityWarning] = useState(false);
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
+
   async function login(token: string) {
     localStorage.setItem("token", token);
     setToken(token);
@@ -67,6 +75,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
+
   function logout() {
     localStorage.removeItem("token");
 
@@ -74,14 +88,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(null);
 
-    setShowSessionWarning(false);   // ✅ Hide popup
+    // Hide JWT warning
+    setShowSessionWarning(false); // ✅ Hide popup
+
+    // ⭐ NEW
+    // Hide inactivity warning also
+    setInactivityWarning(false);
 
     setCountdown(60);                  //reset countdown
   }
 
+   // =====================================================
+  // HIDE JWT WARNING
+  // =====================================================
+
   function hideSessionWarning() {
     setShowSessionWarning(false);
 }
+
+
+  // =====================================================
+  // 1️⃣ JWT EXPIRATION TIMER
+  // =======================================================
 
   useEffect(() => {
 
@@ -100,6 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
     }
 
+     // Warn 60 seconds before JWT expires
     const warningTime = remainingTime - 60000;
 
     let warningTimer: number | undefined;
@@ -108,18 +137,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         warningTimer = window.setTimeout(() => {
 
+            setCountdown(60);
             setShowSessionWarning(true);
 
         }, warningTime);
 
     }
-
+    
+    // Actual JWT logout timer
     const logoutTimer = window.setTimeout(() => {
 
         logout();
 
     }, remainingTime);
-
+    
+    // Cleanup
     return () => {
 
         if (warningTimer) {
@@ -132,11 +164,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 }, [token]);
 
+// =====================================================
+  // 2️⃣ COUNTDOWN TIMER
+  // =====================================================
+
 useEffect(() => {
 
-    if (!showSessionWarning) return;
+    if (
+      !showSessionWarning &&
+      !inactivityWarning
+    ) {
+      return;
+    }
 
-    setCountdown(60);
+      // Start countdown from 60 seconds
 
     const interval = setInterval(() => {
 
@@ -156,55 +197,160 @@ useEffect(() => {
 
     },1000);
 
+
+    // Cleanup interval
     return ()=>clearInterval(interval);
 
-},[showSessionWarning]);
+},[showSessionWarning, inactivityWarning]);
+
+// =====================================================
+  // 3️⃣ INACTIVITY TIMER
+  // =====================================================
 
 useEffect(() => {
 
-    if (!token) return;
+    console.log("INACTIVITY EFFECT RUNNING");
+
+    if (!token) {
+        console.log("NO TOKEN - inactivity timer not started");
+        return;
+    }
+
+    console.log("TOKEN EXISTS - starting 30 second timer");
 
     let inactivityTimer: number;
 
     function resetTimer() {
 
+        console.log("USER ACTIVITY DETECTED - resetting timer");
+
+        setInactivityWarning(false);
+
         clearTimeout(inactivityTimer);
 
         inactivityTimer = window.setTimeout(() => {
 
-            alert("Logged out due to inactivity.");
+            console.log("🔥 30 SECONDS PASSED - SHOWING WARNING");
 
-            logout();
+            setCountdown(60);
+            setInactivityWarning(true);
 
-        }, 15 * 60 * 1000);   // 15 minutes
-
+        }, 30 * 1000);
     }
 
-    window.addEventListener("mousemove", resetTimer);
-    window.addEventListener("keydown", resetTimer);
-    window.addEventListener("click", resetTimer);
-    window.addEventListener("scroll", resetTimer);
 
-    // Start timer immediately
-    resetTimer();
+    // Start initial timer
+    inactivityTimer = window.setTimeout(() => {
+
+        console.log("🔥 INITIAL 30 SECOND TIMER FINISHED");
+
+        setCountdown(60);
+        setInactivityWarning(true);
+
+    }, 30 * 1000);
+
+
+    window.addEventListener(
+        "mousemove",
+        resetTimer
+    );
+
+    window.addEventListener(
+        "keydown",
+        resetTimer
+    );
+
+    window.addEventListener(
+        "click",
+        resetTimer
+    );
+
+    window.addEventListener(
+        "scroll",
+        resetTimer
+    );
+
 
     return () => {
 
+        console.log("🧹 CLEANING INACTIVITY TIMER");
+
         clearTimeout(inactivityTimer);
 
-        window.removeEventListener("mousemove", resetTimer);
-        window.removeEventListener("keydown", resetTimer);
-        window.removeEventListener("click", resetTimer);
-        window.removeEventListener("scroll", resetTimer);
+        window.removeEventListener(
+            "mousemove",
+            resetTimer
+        );
+
+        window.removeEventListener(
+            "keydown",
+            resetTimer
+        );
+
+        window.removeEventListener(
+            "click",
+            resetTimer
+        );
+
+        window.removeEventListener(
+            "scroll",
+            resetTimer
+        );
 
     };
 
 }, [token]);
 
+// =====================================================
+  // 4️⃣ INACTIVITY WARNING → 60 SECOND TIMER
+  // =====================================================
+
+  // ⭐ THIS IS THE NEW useEffect
+  //
+  // IMPORTANT:
+  // It is OUTSIDE the inactivity useEffect above.
+  //
+  // You accidentally put it INSIDE before.
+
+  useEffect(() => {
+
+    // If there is no inactivity warning,
+    // do nothing.
+
+    if (!inactivityWarning) return;
+
+
+    // Give the user 60 seconds
+
+    const timer =
+      window.setTimeout(() => {
+
+        logout();
+
+      }, 60000);
+
+
+    // If user becomes active again,
+    // cancel this timer.
+
+    return () =>
+      clearTimeout(timer);
+
+
+  }, [inactivityWarning]);
+
+
+ // =====================================================
+  // UPDATE USER
+  // =====================================================
   function updateUser(user: CurrentUser) {
     setUser(user);
   }
 
+
+// =====================================================
+  // PROVIDER
+  // =====================================================
   return (
     <AuthContext.Provider
       value={{
@@ -216,6 +362,7 @@ useEffect(() => {
         showSessionWarning,
         countdown,
         hideSessionWarning,
+        inactivityWarning,
         isAuthenticated: !!token,
       }}
     >
@@ -223,6 +370,11 @@ useEffect(() => {
     </AuthContext.Provider>
   );
 }
+
+
+// =====================================================
+// useAuth
+// =====================================================
 
 export function useAuth() {
   const context = useContext(AuthContext);

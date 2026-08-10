@@ -4,11 +4,18 @@ export default function SessionTimeoutModal() {
 
     const {
         showSessionWarning,
+        inactivityWarning,
         countdown,
-        logout
+        logout,
+        hideSessionWarning
     } = useAuth();
 
-    if (!showSessionWarning) return null;
+  // Don't show anything if neither warning is active
+    if (!showSessionWarning && !inactivityWarning) {
+        return null;
+    }
+
+    const isInactivityWarning = inactivityWarning;
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -16,11 +23,14 @@ export default function SessionTimeoutModal() {
             <div className="bg-white rounded-xl shadow-xl p-6 w-96">
 
                 <h2 className="text-2xl font-bold mb-3">
-                    ⚠ Session Expiring
+                    {isInactivityWarning ? "⚠ Inactivity Detected" : "⚠ Session Expiring"}
                 </h2>
 
                 <p className="text-gray-600 mb-4">
-                    Your session will expire in
+                     {isInactivityWarning
+                        ? "You've been inactive. Your session will expire in:"
+                        : "Your session will expire in:"
+                    }
                 </p>
 
                 <div className="text-5xl font-bold text-center mb-6">
@@ -33,11 +43,18 @@ export default function SessionTimeoutModal() {
 
                 <div className="flex gap-3">
 
-                    <button
-                        className="flex-1 bg-gray-500 text-white py-2 rounded-lg"
-                    >
-                        Stay Logged In
-                    </button>
+                    {isInactivityWarning && (
+
+                        <button
+                            onClick={() => {
+                                window.location.reload();
+                            }}
+                            className="flex-1 bg-primary text-white py-2 rounded-lg"
+                        >
+                            Continue Session
+                        </button>
+
+                    )}
 
                     <button
                         onClick={logout}
