@@ -1,9 +1,14 @@
 const BASE_URL = "http://localhost:8080/auth";
 
+export type AuthResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 export async function loginApi(
   email: string,
   password: string
-) {
+) : Promise<AuthResponse>{
   const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
      headers: {
@@ -19,7 +24,7 @@ export async function loginApi(
     throw new Error("Login failed");
   }
 
-  return res.text();
+  return res.json();
 }
 
 export async function registerApi(
@@ -28,6 +33,7 @@ export async function registerApi(
   firstName: string,
   lastName: string,
   phoneNumber: string
+  
 ) {
   const res = await fetch(`${BASE_URL}/register`, {
     method: "POST",
@@ -48,4 +54,28 @@ export async function registerApi(
   }
 
   return res.text();
+}
+
+
+export async function refreshApi(
+  refreshToken: string
+): Promise<AuthResponse> {
+
+  const res = await fetch(`${BASE_URL}/refresh`, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      refreshToken
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error("Refresh failed");
+  }
+
+  return res.json();
 }

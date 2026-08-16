@@ -1,12 +1,15 @@
 import { fetchCurrentUser } from "../api/userApi";
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import { refreshApi } from "../api/authApi";
 
 type AuthContextType = {
   token: string | null;
   user: CurrentUser | null;
 
-  login: (token: string) => void;
+  refreshToken: string | null;
+
+  login: (token: string, refreshToken: string) => Promise<void>;
 
   logout: () => void;
 
@@ -21,6 +24,8 @@ type AuthContextType = {
   inactivityWarning: boolean;
 
   isAuthenticated: boolean;
+
+  refreshAccessToken: () => Promise<void>;
 };
 
 type CurrentUser = {
@@ -50,6 +55,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.getItem("token"),
   );
 
+  const [refreshToken, setRefreshToken] = useState<string | null>(
+  localStorage.getItem("refreshToken")
+);
+
   const [user, setUser] = useState<CurrentUser | null>(null);
 
   const [showSessionWarning, setShowSessionWarning] = useState(false);
@@ -62,9 +71,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // LOGIN
   // =====================================================
 
-  async function login(token: string) {
+  async function login(token: string, refreshToken: string) {
     localStorage.setItem("token", token);
     setToken(token);
+    localStorage.setItem("refreshToken", refreshToken);
+    setRefreshToken(refreshToken);
 
     try {
       const currentUser = await fetchCurrentUser();
@@ -84,7 +95,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   function logout() {
     localStorage.removeItem("token");
 
+    localStorage.removeItem("refreshToken");
+
     setToken(null);
+
+    setRefreshToken(null);
 
     setUser(null);
 
@@ -97,6 +112,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setCountdown(60);                  //reset countdown
   }
+
+  async function refreshAccessToken() {
+
+  if (!refreshToken) {
+    logout();
+    return;
+  }
+
+  try {
+
+    const response =
+      await refreshApi(refreshToken);
+
+    localStorage.setItem(
+      "token",
+      response.accessToken
+    );
+
+    setToken(response.accessToken);
+
+    // Keep the same refresh token
+    localStorage.setItem(
+      "refreshToken",
+      response.refreshToken
+    );
+
+    setRefreshToken(
+      response.refreshToken
+    );
+
+    // Hide warning
+    setShowSessionWarning(false);
+    setInactivityWarning(false);
+    setCountdown(60);
+
+  } catch (error) {
+
+    console.error(
+      "Token refresh failed",
+      error
+    );
+
+    logout();
+  }
+}
 
    // =====================================================
   // HIDE JWT WARNING
@@ -355,6 +415,7 @@ useEffect(() => {
     <AuthContext.Provider
       value={{
         token,
+        refreshToken,
         user,
         login,
         logout,
@@ -364,6 +425,7 @@ useEffect(() => {
         hideSessionWarning,
         inactivityWarning,
         isAuthenticated: !!token,
+        refreshAccessToken
       }}
     >
       {children}

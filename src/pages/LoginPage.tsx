@@ -29,13 +29,15 @@ export default function LoginPage() {
 
     try {
 
-      const token =
-        await loginApi(
+      const response =await loginApi(
           email,
           password
         );
 
-      await login(token);
+      await login(
+  response.accessToken,
+  response.refreshToken
+);
 
       await refreshData();
 
