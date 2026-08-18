@@ -276,7 +276,7 @@ useEffect(() => {
         return;
     }
 
-    console.log("TOKEN EXISTS - starting 30 second timer");
+    console.log("TOKEN EXISTS - starting 15 minutes timer");
 
     let inactivityTimer: number;
 
@@ -290,24 +290,17 @@ useEffect(() => {
 
         inactivityTimer = window.setTimeout(() => {
 
-            console.log("🔥 30 SECONDS PASSED - SHOWING WARNING");
+            console.log("🔥 15 minutes PASSED - SHOWING WARNING");
 
             setCountdown(60);
             setInactivityWarning(true);
 
-        }, 30 * 1000);
+        }, 15* 60 * 1000);
     }
 
 
     // Start initial timer
-    inactivityTimer = window.setTimeout(() => {
-
-        console.log("🔥 INITIAL 30 SECOND TIMER FINISHED");
-
-        setCountdown(60);
-        setInactivityWarning(true);
-
-    }, 30 * 1000);
+    resetTimer();
 
 
     window.addEventListener(
