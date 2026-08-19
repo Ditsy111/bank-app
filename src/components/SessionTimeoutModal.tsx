@@ -6,7 +6,6 @@ export default function SessionTimeoutModal() {
     inactivityWarning,
     countdown,
     logout,
-    hideSessionWarning,
     refreshAccessToken,
   } = useAuth();
 

@@ -53,8 +53,8 @@ type BankContextType = {
   accounts: Account[];
   loans: Loan[];
   createAccount: (data: CreateAccountRequest) => Promise<void>;
-  createTransfer: (from: string, to: string, amount: number) => void;
-  makeLoanPayment: (loanId: string, fromAccount: string, amount: number) => void;
+  createTransfer: (from: string, to: string, amount: number) => Promise<void>;
+  makeLoanPayment: (loanId: string, fromAccount: string, amount: number) => Promise<void>;
   depositMoney: (id: string, amount: number) => Promise<void>;
   withdrawMoney: (id: string, amount: number) => Promise<void>;
   createLoan: (accountId: string, data: any) => Promise<void>;
@@ -71,11 +71,7 @@ const [accounts, setAccounts] = useState<Account[]>([]);
 
  const [loans, setLoans] = useState<Loan[]>([]);
 
- const [loading, setLoading] = useState(true);
-
   async function loadData() {
-
-    setLoading(true);
 
     try {
 
@@ -89,26 +85,37 @@ const [accounts, setAccounts] = useState<Account[]>([]);
 
         console.error(error);
 
-    } finally {
-
-        setLoading(false);
-
-    }
-
+    } 
 }
 
 const { isAuthenticated } = useAuth();
 
 useEffect(() => {
-    if (isAuthenticated) {
-        void loadData();
-    } else {
-        setAccounts([]);
-        setLoans([]);
-        setLoading(false);
-    }
-}, [isAuthenticated]);
 
+    if (!isAuthenticated) {
+        return;
+    }
+
+    Promise.all([
+        fetchAccounts(),
+        fetchLoans()
+    ])
+        .then(([accountsData, loansData]) => {
+
+            setAccounts(accountsData);
+            setLoans(loansData);
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Failed to load bank data",
+                error
+            );
+
+        });
+
+}, [isAuthenticated]);
 
   async function createTransfer(from: string, to: string, amount: number) {
   try {
@@ -164,10 +171,6 @@ async function makeLoanPayment(
   await payLoan({loanId, fromAccount: fromAccountId, amount});
 
   await loadData();
-}
-
-if (loading) {
-  return <div>Loading...</div>;
 }
   return (
     <BankContext.Provider

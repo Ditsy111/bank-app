@@ -9,7 +9,6 @@ export async function fetchAccounts() {
     headers: getAuthHeaders()
   }
 );
-
   if (!res.ok) {
     throw new Error("Failed to fetch accounts");
   }

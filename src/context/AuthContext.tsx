@@ -2,6 +2,7 @@ import { fetchCurrentUser } from "../api/userApi";
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { refreshApi } from "../api/authApi";
+import { logoutApi } from "../api/authApi";
 
 type AuthContextType = {
   token: string | null;
@@ -11,7 +12,7 @@ type AuthContextType = {
 
   login: (token: string, refreshToken: string) => Promise<void>;
 
-  logout: () => void;
+  logout: () => Promise<void>;
 
   updateUser: (user: CurrentUser) => void;
 
@@ -26,6 +27,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
 
   refreshAccessToken: () => Promise<void>;
+
 };
 
 type CurrentUser = {
@@ -92,26 +94,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // =====================================================
 
 
-  function logout() {
-    localStorage.removeItem("token");
+  async function logout() {
 
-    localStorage.removeItem("refreshToken");
+    const currentRefreshToken =
+        localStorage.getItem("refreshToken");
 
-    setToken(null);
+    try {
 
-    setRefreshToken(null);
+        if (currentRefreshToken) {
 
-    setUser(null);
+            await logoutApi(
+                currentRefreshToken
+            );
 
-    // Hide JWT warning
-    setShowSessionWarning(false); // ✅ Hide popup
+        }
 
-    // ⭐ NEW
-    // Hide inactivity warning also
-    setInactivityWarning(false);
+    } catch (error) {
 
-    setCountdown(60);                  //reset countdown
-  }
+        console.error(
+            "Backend logout failed",
+            error
+        );
+
+    } finally {
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+
+        setToken(null);
+        setRefreshToken(null);
+        setUser(null);
+
+        setShowSessionWarning(false);
+        setInactivityWarning(false);
+        setCountdown(60);
+    }
+}
 
   async function refreshAccessToken() {
 
