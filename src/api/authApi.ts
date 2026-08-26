@@ -5,6 +5,10 @@ export type AuthResponse = {
   refreshToken: string;
 };
 
+export type LoginResponse = {
+  message: string;
+};
+
 export async function loginApi(
   email: string,
   password: string
@@ -27,6 +31,33 @@ export async function loginApi(
   return res.json();
 }
 
+export async function verifyOtpApi(
+  phoneNumber: string,
+  otp: string,
+  purpose: string
+): Promise<AuthResponse> {
+
+  const res = await fetch(`${BASE_URL}/otp/verify`, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      phoneNumber,
+      otp,
+      purpose
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error("Invalid OTP");
+  }
+
+  return res.json();
+}
+
 export async function registerApi(
   email: string,
   password: string,
@@ -34,7 +65,7 @@ export async function registerApi(
   lastName: string,
   phoneNumber: string
   
-) {
+) : Promise<string> {
   const res = await fetch(`${BASE_URL}/register`, {
     method: "POST",
      headers: {

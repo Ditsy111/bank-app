@@ -150,7 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setToken(response.accessToken);
 
-    // Keep the same refresh token
+    // store new refresh token
     localStorage.setItem(
       "refreshToken",
       response.refreshToken
