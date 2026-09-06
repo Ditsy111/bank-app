@@ -1,8 +1,9 @@
 import { fetchCurrentUser } from "../api/userApi";
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { refreshApi } from "../api/authApi";
+import { refreshApi, verifyOtpApi } from "../api/authApi";
 import { logoutApi } from "../api/authApi";
+
 
 type AuthContextType = {
   token: string | null;
@@ -13,6 +14,8 @@ type AuthContextType = {
   login: (token: string, refreshToken: string) => Promise<void>;
 
   logout: () => Promise<void>;
+
+  verifyOtp: (phoneNumber: string, otp: string, purpose: string) => Promise<void>;
 
   updateUser: (user: CurrentUser) => void;
 
@@ -87,6 +90,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to load current user", error);
     }
   }
+
+  // =====================================================
+  // verify Otp
+  // =====================================================
+
+
+  async function verifyOtp(
+  phoneNumber: string,
+  otp: string,
+  purpose: string
+) {
+
+  const response = await verifyOtpApi(
+    phoneNumber,
+    otp,
+    purpose
+  );
+
+  await login(
+    response.accessToken,
+    response.refreshToken
+  );
+}
 
 
   // =====================================================
@@ -427,6 +453,7 @@ useEffect(() => {
       value={{
         token,
         refreshToken,
+        verifyOtp,
         user,
         login,
         logout,
