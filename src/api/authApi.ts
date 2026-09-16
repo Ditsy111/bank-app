@@ -9,6 +9,11 @@ export type LoginResponse = {
   message: string;
 };
 
+export type OtpLoginResponse = {
+    message: string;
+    phoneNumber: string;
+};
+
 
 // =========================
 // OTP REQUEST
@@ -39,6 +44,51 @@ export async function requestOtp(
   return res.text();
 }
 
+export async function requestPasswordReset(
+  phoneNumber: string
+): Promise<string> {
+
+  const res = await fetch(`${BASE_URL}/password/request`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ phoneNumber })
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to request password reset");
+  }
+
+  return res.text();
+}
+
+
+export async function resetPassword(
+  phoneNumber: string,
+  otp: string,
+  newPassword: string
+): Promise<string> {
+
+  const res = await fetch(`${BASE_URL}/password/reset`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      phoneNumber,
+      otp,
+      newPassword
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error("Password reset failed");
+  }
+
+  return res.text();
+}
+
 
 // =========================
 // PASSWORD LOGIN
@@ -47,7 +97,7 @@ export async function requestOtp(
 export async function loginApi(
   email: string,
   password: string
-): Promise<AuthResponse> {
+): Promise<OtpLoginResponse> {
 
   const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
@@ -66,9 +116,8 @@ export async function loginApi(
     throw new Error("Login failed");
   }
 
-  return res.json();   //this takes email and password as input and returns accessToken and refreshToken as output
+  return res.json();   //this takes email and password as input and returns message and phoneNumber
 }
-
 
 // =========================
 // OTP VERIFY

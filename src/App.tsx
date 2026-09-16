@@ -19,6 +19,9 @@ import ProfilePage from "./pages/ProfilePage";
 import SessionTimeoutModal from "./components/SessionTimeoutModal";
 
 import { useAuth } from "./context/AuthContext";
+
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+
 function App() {
 
   const { isAuthenticated } = useAuth();
@@ -49,6 +52,7 @@ function App() {
           <Route path="/loans/:loanId" element={<ProtectedRoute><LoanDetailPage /></ProtectedRoute>} />
           <Route path="/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />}/>
         </Routes>
       </div>
 

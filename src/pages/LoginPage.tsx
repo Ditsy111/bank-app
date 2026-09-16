@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   loginApi,
   requestOtp
@@ -31,6 +31,9 @@ export default function LoginPage() {
 
   const [otpSent, setOtpSent] = useState(false);
 
+  const [otpTimer, setOtpTimer] = useState(0);
+const [resendTimer, setResendTimer] = useState(0);
+
   // =========================
   // ERROR
   // =========================
@@ -49,28 +52,14 @@ export default function LoginPage() {
 
     setError("");
 
-    try {
+     try {
+        const response = await loginApi(email, password);
 
-      const response = await loginApi(
-        email,
-        password
-      );
-
-      await login(
-        response.accessToken,
-        response.refreshToken
-      );
-
-      await refreshData();
-
-      navigate("/");
+        setPhoneNumber(response.phoneNumber);
+        setOtpSent(true);
 
     } catch {
-
-      setError(
-        "Invalid email or password"
-      );
-
+        setError("Invalid email or password");
     }
   }
 
@@ -177,6 +166,13 @@ export default function LoginPage() {
           </button>
 
         </form>
+
+        <Link
+  to="/forgot-password"
+  className="text-blue-600"
+>
+  Forgot Password?
+</Link>
 
 
         {/* ================================= */}
