@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -35,6 +35,7 @@ export default function Sidebar() {
         <NavItem to="/loans" label="Loans" icon="🏦" />
         <NavItem to="/statements" label="Statements" icon="📄" />
         <NavItem to="/profile" label="Profile" icon="👤" />
+        {user?.role === "ADMIN" && (<NavItem to="/admin/transactions" label="Admin" icon="🛡️" />)}
       </nav>
 
       <button

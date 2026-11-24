@@ -21,6 +21,7 @@ import SessionTimeoutModal from "./components/SessionTimeoutModal";
 import { useAuth } from "./context/AuthContext";
 
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import AdminTransactionsPage from "./pages/AdminTransactionsPage";
 
 function App() {
 
@@ -53,6 +54,8 @@ function App() {
           <Route path="/statements" element={<ProtectedRoute><StatementsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />}/>
+          <Route path="/admin/transactions" element={<ProtectedRoute roles={["ADMIN"]}><AdminTransactionsPage /></ProtectedRoute>}
+/>
         </Routes>
       </div>
 

@@ -4,6 +4,7 @@ import {
   requestPasswordReset,
   resetPassword
 } from "../api/authApi";
+import AdminTransactionsPage from "../pages/AdminTransactionsPage";
 
 export default function ForgotPasswordPage() {
 
